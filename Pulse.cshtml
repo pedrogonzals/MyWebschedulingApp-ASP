@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Pulse Readings";
+}
+
+<hgroup class="title">
+    <h1>@Page.Title.</h1>
+    <h2>Readings must be between safezone to be normal.</h2>
+</hgroup>
+<meta charset='UTF-8'>
+	
+	<title>Pulse Readings</title>
+	
+	<link rel='stylesheet' href='css/style.css'>
+		
+	 <!--Load the AJAX API-->
+   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['CoreChart']});
+    </script>
+    <script type="text/javascript">
+    var visualization;
+
+    function drawVisualization() {
+      // To see the data that this visualization uses, browse to
+      // http://spreadsheets.google.com/ccc?key=pCQbetd-CptGXxxQIG7VFIQ
+      var query = new google.visualization.Query(
+          'https://docs.google.com/spreadsheet/ccc?key=0ApJq3qdGfj8XdHNCSGowQm9pTDNLVEJnTXl3OU41bkE&usp=sharing');
+    
+      // Send the query with a callback function.
+      query.send(handleQueryResponse);
+    }
+    
+    function handleQueryResponse(response) {
+      if (response.isError()) {
+        alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+        return;
+      }
+   
+var options = {
+          title: 'My Pulse readings ',
+  curveType: "function"
+ 
+ 
+        };
+      
+      var data = response.getDataTable();
+      visualization = new google.visualization.ScatterChart(document.getElementById('visualization'));
+      visualization.draw(data, options);
+    }
+    
+
+    google.setOnLoadCallback(drawVisualization);
+    </script>
+</head>
+<article>
+   
+    <p>
+        My readings: <a href="~/Pulse">Pulse</a>, <a href="~/Weight">Weight</a>, <a href="~/BloodPressure">Blood Pressure</a>
+    </p>
+     <p>
+        Statistics: AVE = 77.36 &nbsp&nbsp STDEV = 9.52
+    </p>
+    
+     <!--Div that will hold the pie chart-->
+    <div id="visualization" style="height: 400px; width: 800px;"></div>
+</article>
+

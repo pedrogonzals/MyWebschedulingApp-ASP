@@ -1,0 +1,19 @@
+﻿@{
+   //checks for admin role before making site accessible
+   if (Roles.IsUserInRole("physician"))
+{<span>welcome to the jungle </span>}
+    else
+{Response.Redirect("~/AdminError.cshtml");} 
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        
+    </body>
+</html>

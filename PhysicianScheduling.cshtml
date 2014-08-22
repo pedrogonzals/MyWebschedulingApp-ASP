@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/_SiteLayoutDr.cshtml";
+    Page.Title = "Scheduling";
+    
+    //open database .sdf file
+    var db = Database.Open("StarterSite");
+    var selectedData = db.Query("SELECT * FROM Appointments WHERE Confirmation !='X'");
+    var grid = new WebGrid(source: selectedData);
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Appointments</title>
+       <style type="text/css">
+  .grid { margin: 4px; border-collapse: collapse; width: 600px; }
+  .grid th, .grid td { border: 1px solid #C0C0C0; padding: 5px; }
+  .head { background-color: #E8E8E8; font-weight: bold; color: #FFF; }
+  .alt { background-color: #E8E8E8; color: #000; }
+</style>   
+    </head>
+    <body>
+        <h1> Your Appointments</h1>
+<div>
+    @grid.GetHtml(
+    tableStyle: "grid",
+    headerStyle: "head",
+    alternatingRowStyle: "alt",
+    columns: grid.Columns(
+        grid.Column(format: @<a href="~/ConfirmAppointment?id=@item.PatientID">Confirm</a>),
+        grid.Column("Name"),
+        grid.Column("StartTime"),
+        grid.Column("EndTime"),
+        grid.Column("Date"),
+        grid.Column("Reason"),
+        grid.Column("Confirmation"),
+        grid.Column("Comment")
+       )
+        
+    )
+</div>
+        
+    </body>
+</html>

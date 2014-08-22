@@ -1,0 +1,101 @@
+﻿@{
+    
+    Layout = "~/_SiteLayoutDr.cshtml";
+    Page.Title = "Confirm Appointment";
+    
+    
+    var Date = "";
+    var StartTime = "";
+    var EndTime = "";
+    var AppointmentId = "";
+    var Confirmation = "";
+    var Comment = "";
+
+    if(!IsPost){
+        if(!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt()){
+            AppointmentId = Request.QueryString["ID"];
+            var db = Database.Open("StarterSite");
+            var dbCommand = "SELECT * FROM Appointments WHERE PatientID = @0";
+            var row = db.QuerySingle(dbCommand, AppointmentId);
+            
+            Date = row.Date;
+            StartTime = row.StartTime;
+            EndTime = row.EndTime;
+            Confirmation =row.Confirmation;
+            Comment = row.Comment;
+                                   
+                 }
+        }
+
+         if(IsPost){
+             
+         Date = Request.Form["Date"];
+         StartTime = Request.Form["StartTime"];
+         EndTime = Request.Form["EndTime"];
+         AppointmentId = Request.Form["Appointmentid"];
+         Comment = Request.Form["Comment"];
+         Confirmation = Request.Form["Confirmation"];
+
+         if (Confirmation == "yes")
+             {
+             Confirmation = "X";
+             AppState["ConfirmationMessage"] = "your appointment has been confirmed";
+             }
+           
+
+
+        if(Validation.IsValid()){
+
+            var db = Database.Open("StarterSite");
+            var updateCommand = "UPDATE Appointments SET Comment=@0, Confirmation=@1 WHERE PatientID=@2";
+            db.Execute(updateCommand, Comment, Confirmation, AppointmentId);
+            Response.Redirect("~/PhysicianScheduling");
+        }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Confirm Appointment</title>
+         <style>
+      .validation-summary-errors{
+        border:2px dashed red;
+        color:red;
+        font-weight:bold;
+        margin:12px;
+      }
+    </style>
+    </head>
+    <body>
+        <h1>Confirm appointment</h1>
+        @Html.ValidationSummary()
+        <form method="post">
+    <fieldset>
+      <legend>Appointment Information</legend>
+        
+         <p><span>Date:</span>
+         <span>@Date</span></p>
+
+        <p><span>Start Time:</span>
+         <span>@StartTime</span></p>
+        
+        <p><span>End Time:</span>
+         <span>@EndTime</span></p>
+        
+         <p><label for="StartTime">Confirmation:</label>
+         <input type="text" name="Confirmation" value="@Confirmation" style="width:50px;" /></p>
+            
+      <p><label for="EndTime">Comment:</label>
+         <input type="text" name="Comment" value="@Comment" /></p>
+
+      <input type="hidden" name="Appointmentid" value="@AppointmentId" />
+
+      <p><input type="submit" name="buttonSubmit" value="Submit Changes" /></p>
+    </fieldset>
+  </form>
+        <p><a href="~/PhysicianScheduling">Return to Appointments</a></p>
+    </body>
+</html>

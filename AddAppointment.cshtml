@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Add Appointment";      
+
+       Validation.RequireField("Name", "You must enter a Name");
+       Validation.RequireField("StartTime", "Start Time is required");
+       Validation.RequireField("EndTime", "End Time is required");
+       Validation.RequireField("Date", "Date is required");
+              
+
+    var Name = "";
+    var StartTime = "";
+    var EndTime = "";
+    var Date = "";
+    var Reason = "";
+    var Confirmation ="No";
+    var ReasonTrim ="";
+
+    if(IsPost && Validation.IsValid()){
+        //gets data from texboxes and saves it to variable
+        Name = Request.Form["Name"];
+        StartTime = Request.Form["StartTime"];
+        EndTime = Request.Form["EndTime"];
+        Date = Request.Form["Date"];
+        Reason = Request.Form["Reason"];
+
+        ReasonTrim = Reason.Trim(',');
+
+        //open database and inserts values to database table
+        var db = Database.Open("StarterSite");
+        var insertCommand = "INSERT INTO Appointments (Name, StartTime, EndTime, Date, Reason,Confirmation) VALUES(@0, @1, @2, @3, @4,@5)";
+        db.Execute(insertCommand, Name, StartTime, EndTime,Date,Reason,Confirmation);
+        Response.Redirect("~/PatientScheduling");
+    }
+
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title> Add Appointment</title>
+        <style>
+        #desc   /*no spaces*/
+        {
+            width:250px;   /*replace &#34;=&#34; with &#34;&#58;&#34;*/
+        }	
+            
+         #datetime   /*no spaces*/
+        {
+            width:50px;   /*replace &#34;=&#34; with &#34;&#58;&#34;*/
+        }	    
+      .field-validation-error {
+      font-weight:bold;
+      color:red;
+      background-color:yellow;
+     }
+    .validation-summary-errors{
+      border:2px dashed red;
+      color:red;
+      background-color:yellow;
+      font-weight:bold;
+      margin:12px;
+    }
+        </style>
+        <link rel="stylesheet" type="text/css" href="Styles/datepicker.css">
+        <script type="text/javascript" src="Scripts/datepickr.js"></script>
+    </head>
+    <body>
+        <h1>Add Appointment</h1>
+        @Html.ValidationSummary()
+  <form method="post">
+    <fieldset>
+      <legend>Appointment Information</legend>
+      <p><label for="Name">Name:</label>
+         <input type="text" name="Name" value="@Request.Form["Name"]" />
+          @Html.ValidationMessage("Name")
+      </p>
+
+      <p><label for="StartTime">Start Time: </label>
+         <input type="text" name="StartTime" id="datetime" value="@Request.Form["StartTime"]" />
+          @Html.ValidationMessage("StartTime")
+      </p>
+       
+      <p><label for="Endtime">End Time: </label>
+         <input type="text" name="EndTime" id="datetime" value="@Request.Form["EndTime"]" />
+          @Html.ValidationMessage("EndTime")
+      </p>
+          <p><label for="Date">Date:</label>
+         <input type="text" name="Date" id="datepick2"  value="@Request.Form["Date"]" />
+              @Html.ValidationMessage("Date")
+      </p>
+          <p><label for="Reason">Reason:</label>
+              <p><input type="radio" name="reason" value="diabetes">diabetes</p>
+              <p></p><input type="radio" name="reason" value="heartburn">heart burn</p>
+            <p><input type="radio" name="reason" value="high lood presure">high blood pressure</p>
+        <p><input type="radio" name="reason" value="tireness">tireness</p>
+        <p><input type="radio" name="reason" value="headache">headache</p>
+        
+              
+      </p>
+      <p><input type="submit" name="buttonSubmit" value="Request Appointment" /></p>
+    </fieldset>
+  </form>
+         <script type="text/javascript">
+					
+			new datepickr('datepick2', {
+				'dateFormat': 'm/d/y'
+			});
+				
+							
+		</script>
+    </body>
+</html>

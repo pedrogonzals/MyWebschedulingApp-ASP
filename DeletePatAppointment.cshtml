@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Delete Appointment";
+
+    var StartTime = "";
+    var EndTime = "";
+    var Date = "";
+    var Reason = "";
+    var AppointmentId = "";
+   
+    if(!IsPost){
+        if(!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt()){
+            AppointmentId = Request.QueryString["ID"];
+            var db = Database.Open("StarterSite");
+            var dbCommand = "SELECT * FROM Appointments WHERE PatientID = @0";
+            var row = db.QuerySingle(dbCommand, AppointmentId);
+            
+            if(row != null) {
+                Date = row.Date;
+                StartTime = row.StartTime;
+                EndTime = row.EndTime;
+                Reason = row.Reason;
+
+            }
+            else{
+                Validation.AddFormError("No appointment was found for that ID.");
+                // If you are using a version of ASP.NET Web Pages 2 that's
+                // earlier than the RC release, comment out the preceding
+                // statement and uncomment the following one.
+                //ModelState.AddFormError("No movie was found for that ID.");
+            }
+        }
+        else{
+            Validation.AddFormError("No appointment was found for that ID.");
+            // If you are using a version of ASP.NET Web Pages 2 that's
+            // earlier than the RC release, comment out the preceding
+            // statement and uncomment the following one.
+            //ModelState.AddFormError("No movie was found for that ID.");
+        }
+    }
+           if(IsPost && !Request["buttonDelete"].IsEmpty()){
+                AppointmentId = Request.Form["AppointmentId"];
+                var db = Database.Open("StarterSite");
+                var deleteCommand = "DELETE FROM Appointments WHERE PatientID = @0";
+                db.Execute(deleteCommand, AppointmentId);
+                Response.Redirect("~/PatientScheduling");
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Delete Appointment</title>
+</head>
+<body>
+      <h1>Delete Appointment</h1>
+        @Html.ValidationSummary()
+      
+      <form method="post">
+        <fieldset>
+        <legend>Appointment Information</legend>
+
+        <p><span>Start Time:</span>
+         <span>@StartTime</span></p>
+
+        <p><span>End Time:</span>
+          <span>@EndTime</span></p>
+           
+        <p><span>Date:</span>
+        <span>@Date</span></p>
+       
+        <p><span>Reason:</span>
+        <span>@Reason</span></p>
+
+        <input type="hidden" name="Appointmentid" value="@AppointmentId" />
+        <p><input type="submit" name="buttonDelete" value="Delete Appointment" /></p>
+        </fieldset>
+      </form>
+        <p><a href="~/PatientScheduling">Return to Appoinments</a></p>
+    </body>
+</html>
